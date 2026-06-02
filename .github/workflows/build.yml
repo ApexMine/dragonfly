@@ -1,0 +1,31 @@
+name: Build Dragonfly for Linux
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: 
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Run go mod tidy
+      run: go mod tidy
+
+    - name: Build for Linux (amd64)
+      run: env GOOS=linux GOARCH=amd64 go build -v -o dragonfly .
+
+    - name: Upload Compiled Binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: dragonfly-linux
+        path: dragonfly
